@@ -1,0 +1,17 @@
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.idea/
+*.iml
+*.log
+.DS_Store
+pubspec.lock
+# android/ dibuat otomatis oleh workflow (flutter create) kalau belum ada.
+# Hapus 3 baris di bawah ini kalau lu mau commit folder android sendiri.
+/android/
+/ios/
+/.metadata

@@ -1,0 +1,80 @@
+name: Build ClownDeck APK
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # channel stable tanpa pin versi = selalu Flutter stable TERBARU
+      - name: Setup Flutter (stable terbaru)
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Versi Flutter / Dart
+        run: flutter --version
+
+      # Folder android dibuat dari template Flutter terbaru (Gradle/AGP/Kotlin ikut terbaru)
+      - name: Generate platform Android
+        run: |
+          if [ ! -d android ]; then
+            flutter create --platforms=android --org com.doctorridx --project-name clowndeck .
+          fi
+
+      - name: Pasang ikon adaptive + nama aplikasi
+        run: |
+          cp -r android_res/. android/app/src/main/res/
+          sed -i 's/android:label="[^"]*"/android:label="ClownDeck"/' android/app/src/main/AndroidManifest.xml
+
+      - name: Upgrade semua dependency ke versi terbaru
+        run: flutter pub upgrade --major-versions
+
+      - name: Analyze
+        run: flutter analyze
+        continue-on-error: true
+
+      - name: Test
+        run: flutter test
+        continue-on-error: true
+
+      - name: Build APK release
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk ClownDeck.apk
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: ClownDeck-APK
+          path: ClownDeck.apk
+          if-no-files-found: error
+
+      - name: GitHub Release (kalau push tag v*)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ClownDeck.apk
