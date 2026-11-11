@@ -82,6 +82,7 @@ class GlassSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveRadius = radius ?? kBorder;
+    final effectiveRadius = radius ?? kBorder;
     return Container(
       decoration: BoxDecoration(borderRadius: effectiveRadius, boxShadow: shadow),
       child: ClipRRect(

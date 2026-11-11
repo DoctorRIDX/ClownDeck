@@ -11,6 +11,7 @@ class AppCard extends StatelessWidget {
   final EdgeInsets padding;
   final Color? borderColor;
   final Color? tint;
+  final Color? tint;
   final bool glowing;
 
   const AppCard({
@@ -19,6 +20,7 @@ class AppCard extends StatelessWidget {
     this.onTap,
     this.padding = const EdgeInsets.all(16),
     this.borderColor,
+    this.tint,
     this.tint,
     this.glowing = false,
   });

@@ -440,6 +440,7 @@ class _SenderChoice extends StatelessWidget {
       borderColor: selected ? C.red : C.border,
       tint: selected ? C.redDeep : null,
       glowing: selected,
+      glowing: selected,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
         children: [
