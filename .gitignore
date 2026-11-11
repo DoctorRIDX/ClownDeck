@@ -1,0 +1,23 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+*.iml
+.idea/
+.vscode/
+
+# Android (dibuat otomatis oleh workflow)
+/android/
+/test/
+
+# Backend
+backend/node_modules/
+backend/auth/
+backend/*.log
+backend/package-lock.json
+*.log

@@ -1,0 +1,64 @@
+name: Build ClownDeck APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter (stable terbaru)
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Versi Flutter
+        run: flutter --version
+
+      - name: Buat scaffold Android
+        run: |
+          flutter create --platforms=android --project-name clowndeck --org com.doctoridx .
+          rm -rf test
+
+      - name: Patch AndroidManifest (internet, storage, nama app)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/>\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>\n    <application|' "$M"
+          sed -i 's|<application|<application android:usesCleartextTraffic="true"|' "$M"
+          sed -i 's|android:label="[^"]*"|android:label="ClownDeck"|' "$M"
+          cat "$M"
+
+      - name: Patch compileSdk (permission_handler butuh SDK 37+)
+        run: |
+          G=android/app/build.gradle.kts
+          sed -i 's/compileSdk = flutter.compileSdkVersion/compileSdk = 37/' "$G"
+          grep -n "compileSdk" "$G"
+
+      - name: Install dependensi
+        run: flutter pub get
+
+      - name: Generate ikon
+        run: dart run flutter_launcher_icons
+
+      - name: Build APK release
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ClownDeck-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error

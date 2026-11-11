@@ -1,0 +1,17 @@
+{
+  "name": "clowndeck-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend Termux untuk ClownDeck (Baileys)",
+  "main": "backend.js",
+  "scripts": {
+    "start": "node backend.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "latest",
+    "pino": "latest"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
